@@ -24,10 +24,9 @@ export class StoreEffects {
   updatePost$: Observable<Action> = this.effectsActions$
     .ofType(actions.REQUEST_POST)
     .map(action => action as actions.RequestPost)
+    .map(action => action.payload)
     .withLatestFrom(this.store.select(s => s.cache.postItems))
-    .switchMap(([action, cachePostItems]) => {
-      const postId: number = action.payload.postId;
-      const timestamp: string = action.payload.timestamp;
+    .switchMap(([{ postId, timestamp }, cachePostItems]) => {
       if (cachePostItems.some(item => item.postId === postId && item.timestamp === timestamp)) {
         return Observable.of(new actions.LoadPostCache({ postId }) as Action);
       } else {
@@ -42,10 +41,9 @@ export class StoreEffects {
   updateComments$: Observable<Action> = this.effectsActions$
     .ofType(actions.REQUEST_COMMENTS)
     .map(action => action as actions.RequestComments)
+    .map(action => action.payload)
     .withLatestFrom(this.store.select(s => s.cache.commentsItems))
-    .switchMap(([action, cacheCommentsItems]) => {
-      const postId: number = action.payload.postId;
-      const timestamp: string = action.payload.timestamp;
+    .switchMap(([{ postId, timestamp }, cacheCommentsItems]) => {
       if (cacheCommentsItems.some(item => item.postId === postId && item.timestamp === timestamp)) {
         return Observable.of(new actions.LoadPostCache({ postId }) as Action);
       } else {
@@ -60,8 +58,9 @@ export class StoreEffects {
   updateSelectedPostId$: Observable<Action> = this.effectsActions$
     .ofType(actions.REQUEST_POST, actions.REQUEST_COMMENTS)
     .map(action => action as actions.RequestPost | actions.RequestComments)
-    .map(action => {
-      const selectedPostId: number = action.payload.postId;
+    .map(action => action.payload)
+    .map(({ postId }) => {
+      const selectedPostId: number = postId;
       return new actions.UpdateSelectedPostId({ selectedPostId });
     });
 

@@ -20,22 +20,22 @@ export class AppComponent {
     this.ids = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(value => '' + value);
 
     this.store.select(s => s)
-      .subscribe(state => {
-        console.log('state', state);
-        const selectedPostId = state.post.selectedPostId;
-        this.post = state.cache.postItems.find(item => item.postId === selectedPostId);
-        this.comments = state.cache.commentsItems.find(item => item.postId === selectedPostId);
+      .do(state => console.log('state', state))
+      .subscribe(({ post, cache }) => {
+        const selectedPostId: number = post.selectedPostId;
+        this.post = cache.postItems.find(item => item.postId === selectedPostId);
+        this.comments = cache.commentsItems.find(item => item.postId === selectedPostId);
       });
   }
 
   onClickPost(id: string) {
     this.store.dispatch(new actions.RequestPost({ postId: +id, timestamp: '123' }));
-    this.store.dispatch(new actions.Go({ path: ['#'], query: { a: 1 } }));
+    // this.store.dispatch(new actions.Go({ path: ['#'], query: { a: 1 } }));
   }
 
   onClickComments(id: string) {
     this.store.dispatch(new actions.RequestComments({ postId: +id, timestamp: '123' }));
-    this.store.dispatch(new actions.Back());
+    // this.store.dispatch(new actions.Back());
   }
 
 }
