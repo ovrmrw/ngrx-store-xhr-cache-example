@@ -45,7 +45,7 @@ export class StoreEffects {
     .withLatestFrom(this.store.select(s => s.cache.commentsItems))
     .switchMap(([{ postId, timestamp }, cacheCommentsItems]) => {
       if (cacheCommentsItems.some(item => item.postId === postId && item.timestamp === timestamp)) {
-        return Observable.of(new actions.LoadPostCache({ postId }) as Action);
+        return Observable.of(new actions.LoadCommentsCache({ postId }) as Action);
       } else {
         return this.httpClientService
           .getComments(postId)
